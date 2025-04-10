@@ -36,6 +36,28 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .back-button,
+    .github-button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      color: white;
+      background: var(--accent-color);
+    }
+
+    .github-button {
+      font-size: 0.9rem;
+      padding: 0.3rem 0.8rem;
+    }
+
     .container {
       max-width: 800px;
       margin: 2rem auto;
@@ -106,6 +128,10 @@
 </head>
 <body>
   <header>
+    <div class="header-left">
+      <a href="https://jonibak2.github.io/pg78hub/" class="back-button">&larr; Назад в хаб</a>
+      <a href="https://github.com/jonibak2" class="github-button">Мой GitHub</a>
+    </div>
     <h1>🎂 Календарь дней рождений PG78 🔴</h1>
     <div class="theme-toggle">🌓</div>
   </header>
