@@ -11,14 +11,12 @@
       --accent-color: #ff6b6b;
       --card-color: #fff;
     }
-
     body.dark {
       --bg-color: #1e1e1e;
       --text-color: #eee;
       --accent-color: #ff8c8c;
       --card-color: #2a2a2a;
     }
-
     body {
       margin: 0;
       font-family: sans-serif;
@@ -26,7 +24,6 @@
       color: var(--text-color);
       transition: background 0.3s, color 0.3s;
     }
-
     header {
       display: flex;
       justify-content: space-between;
@@ -35,65 +32,20 @@
       background: var(--card-color);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-
-    .header-left {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .back-button,
-    .github-button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-      color: white;
-      background: var(--accent-color);
-    }
-
-    .github-button {
-      font-size: 0.9rem;
-      padding: 0.3rem 0.8rem;
-    }
-
     .container {
       max-width: 800px;
       margin: 2rem auto;
       padding: 0 1rem;
     }
-
-    .birthday-form input,
-    .birthday-form button {
-      padding: 0.5rem;
-      margin-right: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    .birthday-form button {
-      background: var(--accent-color);
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    .birthdays {
-      margin-top: 2rem;
-    }
-
     .month-section {
       margin-bottom: 2rem;
     }
-
     .month-title {
       font-size: 1.25rem;
       margin-bottom: 0.5rem;
       border-bottom: 1px solid var(--accent-color);
       padding-bottom: 0.25rem;
     }
-
     .birthday-card {
       background: var(--card-color);
       padding: 1rem;
@@ -104,7 +56,6 @@
       gap: 1rem;
       align-items: center;
     }
-
     .avatar {
       width: 50px;
       height: 50px;
@@ -112,79 +63,41 @@
       object-fit: cover;
       border: 2px solid var(--accent-color);
     }
-
     .theme-toggle {
       cursor: pointer;
-    }
-
-    .controls {
-      margin-top: 1rem;
-    }
-
-    .checkbox-label {
-      margin-right: 0.5rem;
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="header-left">
-      <a href="https://jonibak2.github.io/pg78hub/" class="back-button">&larr; Назад в хаб</a>
-      <a href="https://github.com/jonibak2" class="github-button">Мой GitHub</a>
-    </div>
     <h1>🎂 Календарь дней рождений PG78 🔴</h1>
     <div class="theme-toggle">🌓</div>
   </header>
 
   <div class="container">
-    <form class="birthday-form">
-      <input type="text" id="name" placeholder="Имя" required />
-      <input type="date" id="date" required />
-      <label class="checkbox-label"><input type="checkbox" id="noYear" /> Без года</label>
-      <input type="file" id="avatarInput" accept="image/*" />
-      <button type="submit">Добавить</button>
-    </form>
-
-    <div class="controls">
-      <button onclick="exportJSON()">📤 Экспорт JSON</button>
-      <input type="file" id="importFile" accept=".json" onchange="importJSON(event)" />
-    </div>
-
     <div class="birthdays" id="birthdays"></div>
   </div>
 
-  <canvas id="canvas" width="64" height="64" style="display:none;"></canvas>
-
   <script>
-    const form = document.querySelector('.birthday-form');
+    const birthdays = [
+      { name: "Эристorem", date: "2006-01-16", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/eristorem.png" },
+      { name: "Моринок", date: "2006-02-04", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/morinok.png" },
+      { name: "Хома", date: "2008-03-23", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/homa.png" },
+      { name: "Моди", date: "2007-04-29", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/modie.png" },
+      { name: "Пашок", date: "2005-05-07", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/pasha.png" },
+      { name: "Энд", date: "2007-05-28", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/fayko.png" },
+      { name: "Аня", date: "2005-07-04", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/anya.png" },
+      { name: "Стасик", date: "2007-07-22", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/jonibak.png" },
+      { name: "Ника", date: "2007-08-18", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/nika.png" },
+      { name: "Костя", date: "2006-09-26", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/kostya.png" },
+      { name: "Ержан", date: "2006-10-19", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/erzhan.png" },
+      { name: "Драгоман", date: "2008-10-26", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/dragoman.png" },
+      { name: "Андрей", date: "2002-11-01", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/andrew.png" },
+      { name: "Жанибек", date: "2006-11-12", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/nicech.png" },
+    ];
+
     const birthdaysDiv = document.getElementById('birthdays');
     const themeToggle = document.querySelector('.theme-toggle');
-    const avatarInput = document.getElementById('avatarInput');
-    const noYearCheckbox = document.getElementById('noYear');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-
-    let birthdays = JSON.parse(localStorage.getItem('birthdays') || '[]');
-    let avatarBase64 = '';
-    let editingIndex = null;
-
-    // Caching keys for avatars
-    const avatarStorageKey = 'avatars';
-
-    function saveBirthdays() {
-      localStorage.setItem('birthdays', JSON.stringify(birthdays));
-    }
-
-    function saveAvatars() {
-      localStorage.setItem(avatarStorageKey, JSON.stringify(birthdays.map(b => b.avatar)));
-    }
-
-    function loadAvatars() {
-      const savedAvatars = JSON.parse(localStorage.getItem(avatarStorageKey) || '[]');
-      birthdays.forEach((b, i) => {
-        if (savedAvatars[i]) b.avatar = savedAvatars[i];
-      });
-    }
 
     function daysUntilNextBirthday(dateStr) {
       const today = new Date();
@@ -203,10 +116,10 @@
       birthdays.sort((a, b) => new Date(a.date).getMonth() - new Date(b.date).getMonth() || new Date(a.date).getDate() - new Date(b.date).getDate());
       const months = [...Array(12)].map((_, i) => new Date(0, i).toLocaleString('ru-RU', { month: 'long' }));
       const grouped = {};
-      birthdays.forEach((b, i) => {
+      birthdays.forEach(b => {
         const month = new Date(b.date).getMonth();
         if (!grouped[month]) grouped[month] = [];
-        grouped[month].push({ ...b, index: i });
+        grouped[month].push(b);
       });
 
       for (let i = 0; i < 12; i++) {
@@ -222,13 +135,9 @@
           grouped[i].forEach(b => {
             const date = new Date(b.date);
             const now = new Date();
-            let ageText = '';
-            if (!b.noYear) {
-              let age = now.getFullYear() - date.getFullYear();
-              const upcoming = new Date(now.getFullYear(), date.getMonth(), date.getDate());
-              if (now >= upcoming) age++;
-              ageText = `(будет ${age} лет)`;
-            }
+            let age = now.getFullYear() - date.getFullYear();
+            const upcoming = new Date(now.getFullYear(), date.getMonth(), date.getDate());
+            if (now >= upcoming) age++;
             const daysLeft = daysUntilNextBirthday(b.date);
             const card = document.createElement('div');
             card.className = 'birthday-card';
@@ -236,10 +145,8 @@
               <img class="avatar" src="${b.avatar || 'https://via.placeholder.com/50'}" alt="avatar">
               <div>
                 <strong>${b.name}</strong><br />
-                🎉 ${date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' })} ${ageText}<br />
-                ⏳ Через ${daysLeft} дн.<br />
-                <button onclick="editBirthday(${b.index})">Редактировать</button>
-                <button onclick="deleteBirthday(${b.index})">Удалить</button>
+                🎉 ${date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' })} (будет ${age} лет)<br />
+                ⏳ Через ${daysLeft} дн.
               </div>
             `;
             section.appendChild(card);
@@ -250,99 +157,10 @@
       }
     }
 
-    function deleteBirthday(index) {
-      birthdays.splice(index, 1);
-      saveBirthdays();
-      renderBirthdays();
-    }
-
-    function editBirthday(index) {
-      const birthday = birthdays[index];
-      document.getElementById('name').value = birthday.name;
-      document.getElementById('date').value = birthday.date;
-      noYearCheckbox.checked = birthday.noYear || false;
-      editingIndex = index;
-      form.querySelector('button[type="submit"]').textContent = 'Сохранить';
-    }
-
-    avatarInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const img = new Image();
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        img.onload = () => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          const size = Math.min(img.width, img.height);
-          const sx = (img.width - size) / 2;
-          const sy = (img.height - size) / 2;
-          ctx.drawImage(img, sx, sy, size, size, 0, 0, 64, 64);
-          avatarBase64 = canvas.toDataURL('image/png');
-        };
-        img.src = evt.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const date = document.getElementById('date').value;
-      const noYear = noYearCheckbox.checked;
-      if (!name || !date) return;
-
-      if (editingIndex !== null) {
-        birthdays[editingIndex] = { name, date, noYear, avatar: avatarBase64 || birthdays[editingIndex].avatar };
-        editingIndex = null;
-        form.querySelector('button[type="submit"]').textContent = 'Добавить';
-      } else {
-        birthdays.push({ name, date, noYear, avatar: avatarBase64 });
-      }
-
-      saveBirthdays();
-      saveAvatars(); // save avatar data separately
-      renderBirthdays();
-      form.reset();
-      noYearCheckbox.checked = false;
-      avatarBase64 = '';
-    });
-
     themeToggle.addEventListener('click', () => {
       document.body.classList.toggle('dark');
     });
 
-    function exportJSON() {
-      const blob = new Blob([JSON.stringify(birthdays, null, 2)], { type: 'application/json' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'birthdays.json';
-      link.click();
-    }
-
-    function importJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (Array.isArray(data)) {
-            birthdays = data;
-            loadAvatars();
-            saveBirthdays();
-            saveAvatars();
-            renderBirthdays();
-          } else {
-            alert('Неверный формат файла.');
-          }
-        } catch (err) {
-          alert('Ошибка при чтении файла.');
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    loadAvatars(); // load avatar data
     renderBirthdays();
   </script>
 </body>
