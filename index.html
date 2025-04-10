@@ -31,137 +31,29 @@
       padding: 1rem 2rem;
       background: var(--card-color);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .back-button,
+    .github-button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      color: white;
+      background: var(--accent-color);
+    }
+    .github-button {
+      font-size: 0.9rem;
+      padding: 0.3rem 0.8rem;
     }
     .container {
       max-width: 800px;
       margin: 2rem auto;
       padding: 0 1rem;
-    }
-    .month-section {
-      margin-bottom: 2rem;
-    }
-    .month-title {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-      border-bottom: 1px solid var(--accent-color);
-      padding-bottom: 0.25rem;
-    }
-    .birthday-card {
-      background: var(--card-color);
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-bottom: 0.5rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent-color);
-    }
-    .theme-toggle {
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>🎂 Календарь дней рождений PG78 🔴</h1>
-    <div class="theme-toggle">🌓</div>
-  </header>
-
-  <div class="container">
-    <div class="birthdays" id="birthdays"></div>
-  </div>
-
-  <script>
-    const birthdays = [
-      { name: "Эристorem", date: "2006-01-16", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/eristorem.png" },
-      { name: "Моринок", date: "2006-02-04", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/morinok.png" },
-      { name: "Хома", date: "2008-03-23", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/homa.png" },
-      { name: "Моди", date: "2007-04-29", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/modie.png" },
-      { name: "Пашок", date: "2005-05-07", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/pasha.png" },
-      { name: "Энд", date: "2007-05-28", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/fayko.png" },
-      { name: "Аня", date: "2005-07-04", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/anya.png" },
-      { name: "Стасик", date: "2007-07-22", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/jonibak.png" },
-      { name: "Ника", date: "2007-08-18", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/nika.png" },
-      { name: "Костя", date: "2006-09-26", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/kostya.png" },
-      { name: "Ержан", date: "2006-10-19", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/erzhan.png" },
-      { name: "Драгоман", date: "2008-10-26", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/dragoman.png" },
-      { name: "Андрей", date: "2002-11-01", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/andrew.png" },
-      { name: "Жанибек", date: "2006-11-12", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/nicech.png" },
-    ];
-
-    const birthdaysDiv = document.getElementById('birthdays');
-    const themeToggle = document.querySelector('.theme-toggle');
-
-    function daysUntilNextBirthday(dateStr) {
-      const today = new Date();
-      const date = new Date(dateStr);
-      const month = date.getMonth();
-      const day = date.getDate();
-      const currentYear = today.getFullYear();
-      let next = new Date(currentYear, month, day);
-      if (next < today) next.setFullYear(currentYear + 1);
-      const diffTime = next - today;
-      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    }
-
-    function renderBirthdays() {
-      birthdaysDiv.innerHTML = '';
-      birthdays.sort((a, b) => new Date(a.date).getMonth() - new Date(b.date).getMonth() || new Date(a.date).getDate() - new Date(b.date).getDate());
-      const months = [...Array(12)].map((_, i) => new Date(0, i).toLocaleString('ru-RU', { month: 'long' }));
-      const grouped = {};
-      birthdays.forEach(b => {
-        const month = new Date(b.date).getMonth();
-        if (!grouped[month]) grouped[month] = [];
-        grouped[month].push(b);
-      });
-
-      for (let i = 0; i < 12; i++) {
-        if (grouped[i]) {
-          const section = document.createElement('div');
-          section.className = 'month-section';
-
-          const title = document.createElement('div');
-          title.className = 'month-title';
-          title.textContent = months[i].charAt(0).toUpperCase() + months[i].slice(1);
-          section.appendChild(title);
-
-          grouped[i].forEach(b => {
-            const date = new Date(b.date);
-            const now = new Date();
-            let age = now.getFullYear() - date.getFullYear();
-            const upcoming = new Date(now.getFullYear(), date.getMonth(), date.getDate());
-            if (now >= upcoming) age++;
-            const daysLeft = daysUntilNextBirthday(b.date);
-            const card = document.createElement('div');
-            card.className = 'birthday-card';
-            card.innerHTML = `
-              <img class="avatar" src="${b.avatar || 'https://via.placeholder.com/50'}" alt="avatar">
-              <div>
-                <strong>${b.name}</strong><br />
-                🎉 ${date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' })} (будет ${age} лет)<br />
-                ⏳ Через ${daysLeft} дн.
-              </div>
-            `;
-            section.appendChild(card);
-          });
-
-          birthdaysDiv.appendChild(section);
-        }
-      }
-    }
-
-    themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-    });
-
-    renderBirthdays();
-  </script>
-</body>
-</html>
+   
