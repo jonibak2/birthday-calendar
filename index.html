@@ -87,6 +87,11 @@
     .theme-toggle {
       cursor: pointer;
     }
+    .error-message {
+      color: red;
+      text-align: center;
+      margin: 2rem;
+    }
   </style>
 </head>
 <body class="dark">
@@ -125,19 +130,46 @@
     const themeToggle = document.querySelector('.theme-toggle');
 
     function daysUntilNextBirthday(dateStr) {
-      const today = new Date();
-      const date = new Date(dateStr);
-      const month = date.getMonth();
-      const day = date.getDate();
-      const currentYear = today.getFullYear();
-      let next = new Date(currentYear, month, day);
-      if (next < today) next.setFullYear(currentYear + 1);
-      const diffTime = next - today;
-      return Math.round(diffTime / (1000 * 60 * 60 * 24));
+      try {
+        const today = new Date();
+        const birthDate = new Date(dateStr);
+        const currentYear = today.getFullYear();
+
+        // Reset time to midnight for both dates to compare only the day
+        const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        let nextBirthday = new Date(currentYear, birthDate.getMonth(), birthDate.getDate());
+
+        // If the birthday this year has already passed or is today, use next year
+        if (nextBirthday < todayDate) {
+          nextBirthday.setFullYear(currentYear + 1);
+        }
+
+        // Calculate the difference in days
+        const diffTime = nextBirthday - todayDate;
+        const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return daysLeft;
+      } catch (e) {
+        console.error(`Ошибка в daysUntilNextBirthday для даты ${dateStr}:`, e);
+        return -1; // Возвращаем -1 в случае ошибки
+      }
     }
 
     function renderBirthdays() {
+      console.log('Запуск renderBirthdays...');
+      if (!birthdaysDiv) {
+        console.error('Элемент #birthdays не найден!');
+        document.querySelector('.container').innerHTML = '<div class="error-message">Ошибка: не удалось загрузить календарь.</div>';
+        return;
+      }
+
       birthdaysDiv.innerHTML = '';
+      if (birthdays.length === 0) {
+        console.warn('Массив birthdays пуст!');
+        birthdaysDiv.innerHTML = '<div class="error-message">Нет данных о днях рождения.</div>';
+        return;
+      }
+
+      console.log('Сортировка дней рождения...');
       birthdays.sort((a, b) => new Date(a.date).getMonth() - new Date(b.date).getMonth() || new Date(a.date).getDate() - new Date(b.date).getDate());
       const months = [...Array(12)].map((_, i) => new Date(0, i).toLocaleString('ru-RU', { month: 'long' }));
       const grouped = {};
@@ -147,8 +179,12 @@
         grouped[month].push(b);
       });
 
+      console.log('Группировка завершена:', grouped);
+
+      let hasData = false;
       for (let i = 0; i < 12; i++) {
         if (grouped[i]) {
+          hasData = true;
           const section = document.createElement('div');
           section.className = 'month-section';
 
@@ -164,14 +200,20 @@
             const upcoming = new Date(now.getFullYear(), date.getMonth(), date.getDate());
             if (now >= upcoming) age++;
             const daysLeft = daysUntilNextBirthday(b.date);
+
+            if (daysLeft === -1) {
+              console.warn(`Пропущен рендеринг для ${b.name} из-за ошибки в дате`);
+              return;
+            }
+
             const card = document.createElement('div');
             card.className = 'birthday-card';
             card.innerHTML = `
-              <img class="avatar" src="${b.avatar || 'https://via.placeholder.com/50'}" alt="avatar">
+              <img class="avatar" src="${b.avatar || 'https://via.placeholder.com/50'}" alt="avatar" onerror="this.src='https://via.placeholder.com/50';">
               <div>
                 <strong>${b.name}</strong><br />
                 🎉 ${date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' })} (будет ${age} лет)<br />
-                ⏳ Через ${daysLeft} дн.
+                ${daysLeft === 0 ? '🎈 С ДНЁМ РОЖДЕНИЯ!' : `⏳ Через ${daysLeft} дн.`}
               </div>
             `;
             section.appendChild(card);
@@ -180,13 +222,23 @@
           birthdaysDiv.appendChild(section);
         }
       }
+
+      if (!hasData) {
+        console.warn('Нет данных для отображения месяцев!');
+        birthdaysDiv.innerHTML = '<div class="error-message">Нет дней рождения для отображения.</div>';
+      }
     }
 
     themeToggle.addEventListener('click', () => {
       document.body.classList.toggle('dark');
+      console.log('Тема изменена:', document.body.classList.contains('dark') ? 'темная' : 'светлая');
     });
 
-    renderBirthdays();
+    // Проверка и запуск рендеринга
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM загружен, запуск рендеринга...');
+      renderBirthdays();
+    });
   </script>
 </body>
 </html>
