@@ -4,44 +4,541 @@
   <link rel="icon" type="image/png" href="https://i.imgur.com/1sd499C.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Календарь дней рождений</title>
+  <title>Календарь дней рождений PG78</title>
   <style>
+    /* Variables */
     :root {
+      --black: #040605;
+      --white: #f5f7f6;
+      --blue-white: #e1e7e8;
+      --tangerine: #f86a6c;
+      --accent-color: #ff6b6b;
       --bg-color: #f0f0f0;
       --text-color: #333;
-      --accent-color: #ff6b6b;
       --card-color: #fff;
     }
-    body.dark {
-      --bg-color: #1e1e1e;
-      --text-color: #eee;
-      --accent-color: #ff8c8c;
-      --card-color: #2a2a2a;
+
+    /* Global */
+    * {
+      outline: none;
+      box-sizing: border-box;
     }
+
+    html {
+      font-size: 100%;
+    }
+
     body {
+      height: 100%;
+      padding: 1rem;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, "Helvetica Neue", sans-serif;
       margin: 0;
-      font-family: sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
       transition: background 0.3s, color 0.3s;
     }
-    
-    header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 2rem;
-  background: var(--card-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: relative;
-  text-align: center;
-}
-    .header-left {
+
+    @media screen and (min-width:55em) {
+      body {
+        height: 100vh;
+        margin: 0;
+      }
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      -webkit-font-smoothing: antialiased;
+    }
+
+    p, span, ul, li {
+      color: var(--black);
+      font-weight: 100;
+      -webkit-font-smoothing: subpixel-antialiased;
+      font-size: 1rem;
+    }
+
+    /* Calendar Container */
+    .calendar-contain {
+      position: relative;
+      left: 0;
+      right: 0;
+      border-radius: 0;
+      width: 100%;
+      overflow: hidden;
+      max-width: 1020px;
+      min-width: 450px;
+      margin: 1rem auto;
+      background-color: var(--white);
+      box-shadow: 5px 5px 72px rgba(30, 46, 50, 0.5);
+      color: var(--black);
+
+      @media screen and (min-width:55em) {
+        margin: auto;
+        top: 5%;
+      }
+    }
+
+    /* Title bar */
+    .title-bar {
+      position: relative;
+      width: 100%;
+      display: table;
+      text-align: right;
+      background: var(--white);
+      padding: 0.5rem;
+      margin-bottom: 0;
+    }
+
+    .title-bar:after {
+      display: table;
+      clear: both;
+    }
+
+    .title-bar__burger {
+      display: block;
+      position: relative;
+      float: left;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      width: 38px;
+      height: 30px;
+      font-size: 0;
+      text-indent: -9999px;
+      appearance: none;
+      box-shadow: none;
+      border-radius: none;
+      border: none;
+      cursor: pointer;
+      background: none;
+    }
+
+    .title-bar__burger:focus {
+      outline: none;
+    }
+
+    .burger__lines {
+      display: block;
+      position: absolute;
+      width: 18px;
+      top: 15px;
+      left: 0;
+      right: 0;
+      margin: auto;
+      height: 1px;
+      background: var(--black);
+    }
+
+    .burger__lines:before,
+    .burger__lines:after {
+      position: absolute;
+      display: block;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: var(--black);
+      content: "";
+    }
+
+    .burger__lines:before {
+      top: -5px;
+    }
+
+    .burger__lines:after {
+      bottom: -5px;
+    }
+
+    .title-bar__year {
+      display: block;
+      position: relative;
+      float: left;
+      font-size: 1rem;
+      line-height: 30px;
+      width: 43%;
+      padding: 0 0.5rem;
+      text-align: left;
+    }
+
+    @media screen and (min-width:55em) {
+      .title-bar__year {
+        width: 27%;
+      }
+    }
+
+    .title-bar__month {
+      position: relative;
+      float: left;
+      font-size: 1rem;
+      line-height: 30px;
+      width: 22%;
+      padding: 0 0.5rem;
+      text-align: left;
+    }
+
+    @media screen and (min-width:55em) {
+      .title-bar__month {
+        width: 12%;
+      }
+    }
+
+    .title-bar__month:after {
+      content: "";
+      display: inline;
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      right: 0;
+      top: 5px;
+      margin: auto;
+      border-top: 1px solid var(--black);
+      border-right: 1px solid var(--black);
+      transform: rotate(135deg);
+    }
+
+    .title-bar__minimize,
+    .title-bar__maximize,
+    .title-bar__close {
+      position: relative;
+      float: left;
+      width: 34px;
+      height: 34px;
+    }
+
+    .title-bar__minimize:before,
+    .title-bar__minimize:after,
+    .title-bar__maximize:before,
+    .title-bar__maximize:after,
+    .title-bar__close:before,
+    .title-bar__close:after {
+      top: 30%;
+      right: 30%;
+      bottom: 30%;
+      left: 30%;
+      content: " ";
+      position: absolute;
+      border-color: #8e8e8e;
+      border-style: solid;
+      border-width: 0 0 2px 0;
+    }
+
+    .title-bar .title-bar__controls {
+      display: inline-block;
+      vertical-align: top;
+      position: relative;
+      width: auto;
+    }
+
+    .title-bar .title-bar__controls:before,
+    .title-bar .title-bar__controls:after {
+      content: none;
+    }
+
+    .title-bar .title-bar__minimize:before {
+      border-bottom-width: 2px;
+    }
+
+    .title-bar .title-bar__maximize:before {
+      border-width: 1px 1px 2px 1px;
+    }
+
+    .title-bar .title-bar__close:before,
+    .title-bar .title-bar__close:after {
+      bottom: 50%;
+      top: 49.9%;
+    }
+
+    .title-bar .title-bar__close:before {
+      transform: rotate(45deg);
+    }
+
+    .title-bar .title-bar__close:after {
+      transform: rotate(-45deg);
+    }
+
+    /* Side bar */
+    .calendar__sidebar {
+      width: 100%;
+      margin: 0 auto;
+      float: none;
+      background: linear-gradient(120deg, var(--blue-white), var(--blue-white));
+      padding-bottom: 0.7rem;
+    }
+
+    @media screen and (min-width:55em) {
+      .calendar__sidebar {
+        position: absolute;
+        height: 100%;
+        width: 30%;
+        float: left;
+        margin-bottom: 0;
+      }
+    }
+
+    .calendar__sidebar .content {
+      padding: 2rem 1.5rem 2rem 4rem;
+      color: var(--black);
+    }
+
+    .sidebar__nav {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 0.9rem;
+      padding: 0.7rem 1rem;
+      background-color: var(--white);
+    }
+
+    .sidebar__nav-item {
+      display: inline-block;
+      width: 22px;
+      margin-right: 23px;
+      padding: 0;
+      opacity: 0.8;
+    }
+
+    .sidebar__list {
+      list-style: none;
+      margin: 0;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .sidebar__list-item {
+      margin: 1.2rem 0;
+      color: var(--black);
+      font-weight: 100;
+      font-size: 1rem;
+    }
+
+    .list-item__time {
+      display: inline-block;
+      width: 60px;
+    }
+
+    @media screen and (min-width:55em) {
+      .list-item__time {
+        margin-right: 2rem;
+      }
+    }
+
+    .sidebar__list-item--complete {
+      color: rgba(4, 6, 5, 0.7);
+    }
+
+    .sidebar__list-item--complete .list-item__time {
+      color: rgba(4, 6, 5, 0.7);
+    }
+
+    .sidebar__heading {
+      font-size: 2.2rem;
+      font-weight: bold;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      margin-bottom: 3rem;
+      margin-top: 1rem;
+    }
+
+    .sidebar__heading span {
+      float: right;
+      font-weight: 300;
+    }
+
+    .calendar__heading-highlight {
+      color: #2d444a;
+      font-weight: 900;
+    }
+
+    /* Calendar Days */
+    .calendar__days {
+      display: flex;
+      flex-flow: column wrap;
+      align-items: stretch;
+      width: 100%;
+      float: none;
+      min-height: 580px;
+      height: 100%;
+      font-size: 12px;
+      padding: 0.8rem 0 1rem 1rem;
+      background: var(--white);
+    }
+
+    @media screen and (min-width:55em) {
+      .calendar__days {
+        width: 70%;
+        float: right;
+      }
+    }
+
+    /* Top Bar */
+    .calendar__top-bar {
+      display: flex;
+      flex: 32px 0 0;
+    }
+
+    .top-bar__days {
+      width: 100%;
+      padding: 0 5px;
+      color: var(--black);
+      font-weight: 100;
+      -webkit-font-smoothing: subpixel-antialiased;
+      font-size: 1rem;
+    }
+
+    /* Weeks & Days */
+    .calendar__week {
+      display: flex;
+      flex: 1 1 0;
       gap: 0.5rem;
     }
+    .calendar__month-inner {
+      display: flex;
+      flex-direction: column;
+      row-gap: 0.5rem;
+      width: 100%;
+      background: none;
+    }
+    .calendar__month--past {
+      background: none;
+      color: inherit;
+      border: none;
+    }
+    .calendar__month--current {
+      background: #FF9E9E !important;
+      border-radius: 12px;
+    }
+    .calendar__day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 48px;
+      height: 64px;
+      background: #f5f4f4;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin: 0;
+      padding: 0.3rem 0.1rem 0.1rem 0.1rem;
+      box-sizing: border-box;
+      transition: background 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      position: relative;
+      overflow: visible;
+    }
+    .calendar__day--today {
+      background: #fa6c6c !important;
+      border: 1px solid #e0e0e0;
+      z-index: 3;
+    }
+    .calendar__day.birthday {
+      background: #f5f4f4;
+      border: 1px solid #e0e0e0 !important;
+      z-index: 2;
+      position: relative;
+    }
+    .calendar__date-avatar-wrap {
+      position: relative;
+      width: 100%;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .calendar__date {
+      color: var(--black);
+      font-size: 17px !important;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      z-index: 1;
+      position: relative;
+    }
+    .calendar__avatars-on-date {
+      display: flex;
+      gap: 2px;
+      margin-top: 2px;
+    }
+    .calendar__avatars-on-date img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ff2d2d;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+    .calendar__avatar--today {
+      border: 2.5px solid #ff2d2d !important;
+    }
+    .calendar__task {
+      display: none;
+    }
+    .calendar__day:hover {
+      background: #f6f5f1;
+      box-shadow: 0 2px 8px rgba(253,88,138,0.08);
+    }
+    .calendar__day.birthday {
+      border: 2px solid var(--pink);
+      background: #fff;
+      z-index: 2;
+      position: relative;
+    }
+    .calendar__date {
+      color: var(--black);
+      font-size: 1.7rem;
+      font-weight: 600;
+      line-height: 0.7;
+    }
+
+    @media screen and (min-width:55em) {
+      .calendar__date {
+        font-size: 2.3rem;
+      }
+    }
+
+    .calendar__week .inactive .calendar__date,
+    .calendar__week .inactive .calendar__task {
+      color: #c6c6c6;
+    }
+
+    .calendar__week .today .calendar__date {
+      color: var(--pink);
+    }
+
+    .calendar__task {
+      color: var(--black);
+      display: flex;
+      font-size: 0.8rem;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    @media screen and (min-width:55em) {
+      .calendar__task {
+        font-size: 1rem;
+      }
+    }
+
+    .calendar__task.calendar__task--today {
+      color: var(--pink);
+    }
+
+    .birthday-indicator {
+      background-color: var(--pink);
+      color: white;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      margin-top: 0.2rem;
+    }
+
+    .header-buttons {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 1000;
+    }
+
     .back-button,
     .github-button {
       padding: 0.5rem 1rem;
@@ -51,66 +548,75 @@
       text-decoration: none;
       color: white;
       background: var(--accent-color);
-    }
-    .github-button {
       font-size: 0.9rem;
+    }
+
+    .github-button {
       padding: 0.3rem 0.8rem;
     }
-    .container {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    .month-section {
-      margin-bottom: 2rem;
-    }
-    .month-title {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-      border-bottom: 1px solid var(--accent-color);
-      padding-bottom: 0.25rem;
-    }
-    .birthday-card {
-      background: var(--card-color);
-      padding: 1rem;
+
+    .birthday-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--white);
+      padding: 2rem;
       border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-bottom: 0.5rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      z-index: 2000;
+      max-width: 400px;
+      display: none;
     }
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent-color);
+
+    .birthday-popup.show {
+      display: block;
     }
-    .theme-toggle {
+
+    .birthday-popup h3 {
+      margin-top: 0;
+      color: var(--pink);
+    }
+
+    .birthday-popup .close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
       cursor: pointer;
+      font-size: 1.5rem;
     }
-    .error-message {
-      color: red;
-      text-align: center;
-      margin: 2rem;
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1500;
+      display: none;
+    }
+
+    .overlay.show {
+      display: block;
     }
   </style>
 </head>
-<body class="dark">
-  <header>
-  <div class="header-left" style="align-self: flex-start;">
+<body>
+  <div class="header-buttons">
     <a href="https://jonibak2.github.io/pg78hub/" class="back-button">← Назад в хаб</a>
-    <a href="https://github.com/jonibak2" class="github-button">Мой GitHub</a>
+    <a href="https://github.com/jonibak2" class="github-button">GitHub</a>
   </div>
-  <h1>🎂 Календарь дней рождений PG78 🔴</h1>
-  <img src="gif.gif" alt="GIF"
-       style="max-width: 512px; width: 100%; height: auto; border-radius: 12px; margin-top: 1rem;" />
-  <div class="theme-toggle">🌗</div>
-</header>
 
-  <div class="container">
-    <div class="birthdays" id="birthdays"></div>
+  <main class="calendar-contain" style="max-width: 100%;">
+    <h1 style="text-align:center;margin-bottom:2rem;">Календарь дней рождений PG78</h1>
+    <div id="all-calendars" style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center;"></div>
+  </main>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="birthday-popup" id="birthday-popup">
+    <span class="close" id="close-popup">&times;</span>
+    <div id="popup-content"></div>
   </div>
 
   <script>
@@ -132,8 +638,15 @@
       { name: "Жанибек", date: "2006-11-12", avatar: "https://raw.githubusercontent.com/jonibak2/birthday-calendar/main/jonibak.png" },
     ];
 
-    const birthdaysDiv = document.getElementById('birthdays');
-    const themeToggle = document.querySelector('.theme-toggle');
+    let currentDate = new Date();
+    let selectedDate = new Date();
+
+    const months = [
+      'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+      'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+    ];
+
+    const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
     function daysUntilNextBirthday(dateStr) {
       try {
@@ -141,110 +654,232 @@
         const birthDate = new Date(dateStr);
         const currentYear = today.getFullYear();
 
-        // Reset time to midnight for both dates to compare only the day
         const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         let nextBirthday = new Date(currentYear, birthDate.getMonth(), birthDate.getDate());
 
-        // If the birthday this year has already passed or is today, use next year
         if (nextBirthday < todayDate) {
           nextBirthday.setFullYear(currentYear + 1);
         }
 
-        // Calculate the difference in days
         const diffTime = nextBirthday - todayDate;
         const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return daysLeft;
       } catch (e) {
         console.error(`Ошибка в daysUntilNextBirthday для даты ${dateStr}:`, e);
-        return -1; // Возвращаем -1 в случае ошибки
+        return -1;
       }
     }
 
-    function renderBirthdays() {
-      console.log('Запуск renderBirthdays...');
-      if (!birthdaysDiv) {
-        console.error('Элемент #birthdays не найден!');
-        document.querySelector('.container').innerHTML = '<div class="error-message">Ошибка: не удалось загрузить календарь.</div>';
-        return;
-      }
-
-      birthdaysDiv.innerHTML = '';
-      if (birthdays.length === 0) {
-        console.warn('Массив birthdays пуст!');
-        birthdaysDiv.innerHTML = '<div class="error-message">Нет данных о днях рождения.</div>';
-        return;
-      }
-
-      console.log('Сортировка дней рождения...');
-      birthdays.sort((a, b) => new Date(a.date).getMonth() - new Date(b.date).getMonth() || new Date(a.date).getDate() - new Date(b.date).getDate());
-      const months = [...Array(12)].map((_, i) => new Date(0, i).toLocaleString('ru-RU', { month: 'long' }));
-      const grouped = {};
-      birthdays.forEach(b => {
-        const month = new Date(b.date).getMonth();
-        if (!grouped[month]) grouped[month] = [];
-        grouped[month].push(b);
+    function getBirthdaysForDate(date) {
+      return birthdays.filter(birthday => {
+        const birthDate = new Date(birthday.date);
+        return birthDate.getMonth() === date.getMonth() && birthDate.getDate() === date.getDate();
       });
+    }
 
-      console.log('Группировка завершена:', grouped);
+    function getBirthdaysForMonth(month, year) {
+      return birthdays.filter(birthday => {
+        const birthDate = new Date(birthday.date);
+        return birthDate.getMonth() === month;
+      });
+    }
 
-      let hasData = false;
-      for (let i = 0; i < 12; i++) {
-        if (grouped[i]) {
-          hasData = true;
-          const section = document.createElement('div');
-          section.className = 'month-section';
+    function updateSidebar(date) {
+      const dayNames = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+      const dayName = dayNames[date.getDay()];
+      const dayDate = date.getDate();
+      const monthName = months[date.getMonth()];
 
-          const title = document.createElement('div');
-          title.className = 'month-title';
-          title.textContent = months[i].charAt(0).toUpperCase() + months[i].slice(1);
-          section.appendChild(title);
+      document.getElementById('sidebar-date').textContent = dayName;
+      document.getElementById('sidebar-day').textContent = `${dayDate} ${monthName}`;
 
-          grouped[i].forEach(b => {
-            const date = new Date(b.date);
-            const now = new Date();
-            let age = now.getFullYear() - date.getFullYear();
-            const upcoming = new Date(now.getFullYear(), date.getMonth(), date.getDate());
-            if (now >= upcoming) age++;
-            const daysLeft = daysUntilNextBirthday(b.date);
-
-            if (daysLeft === -1) {
-              console.warn(`Пропущен рендеринг для ${b.name} из-за ошибки в дате`);
-              return;
-            }
-
-            const card = document.createElement('div');
-            card.className = 'birthday-card';
-            card.innerHTML = `
-              <img class="avatar" src="${b.avatar || 'https://via.placeholder.com/50'}" alt="avatar" onerror="this.src='https://via.placeholder.com/50';">
-              <div>
-                <strong>${b.name}</strong><br />
-                🎉 ${date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' })} (будет ${age} лет)<br />
-                ${daysLeft === 0 ? '🎈 С ДНЁМ РОЖДЕНИЯ!' : `⏳ Через ${daysLeft} дн.`}
-              </div>
-            `;
-            section.appendChild(card);
-          });
-
-          birthdaysDiv.appendChild(section);
-        }
-      }
-
-      if (!hasData) {
-        console.warn('Нет данных для отображения месяцев!');
-        birthdaysDiv.innerHTML = '<div class="error-message">Нет дней рождения для отображения.</div>';
+      const birthdaysForDate = getBirthdaysForDate(date);
+      const eventsList = document.getElementById('sidebar-events');
+      
+      if (birthdaysForDate.length > 0) {
+        eventsList.innerHTML = birthdaysForDate.map(birthday => {
+          const date = new Date(birthday.date);
+          const now = new Date();
+          let age = now.getFullYear() - date.getFullYear();
+          const upcoming = new Date(now.getFullYear(), date.getMonth(), date.getDate());
+          if (now >= upcoming) age++;
+          
+          return `<li class="sidebar__list-item">
+            <span class="list-item__time">🎂</span> ${birthday.name} (${age} лет)
+          </li>`;
+        }).join('');
+      } else {
+        eventsList.innerHTML = '<li class="sidebar__list-item">Нет событий на этот день</li>';
       }
     }
 
-    themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      console.log('Тема изменена:', document.body.classList.contains('dark') ? 'темная' : 'светлая');
-    });
+    function renderSingleCalendar(year, month) {
+      const calendarContainer = document.createElement('div');
+      calendarContainer.style.boxShadow = '5px 5px 32px rgba(30, 46, 50, 0.15)';
+      calendarContainer.style.borderRadius = '12px';
+      calendarContainer.style.padding = '1.5rem';
+      calendarContainer.style.marginBottom = '2rem';
+      calendarContainer.style.width = '400px';
+      calendarContainer.style.minWidth = '340px';
+      calendarContainer.style.flex = '0 0 400px';
+      calendarContainer.style.display = 'flex';
+      calendarContainer.style.flexDirection = 'column';
+      calendarContainer.style.alignItems = 'center';
+      // Подсветка месяцев
+      const today = new Date();
+      if (year < today.getFullYear() || (year === today.getFullYear() && month < today.getMonth())) {
+        calendarContainer.classList.add('calendar__month--past');
+      } else if (year === today.getFullYear() && month === today.getMonth()) {
+        calendarContainer.classList.add('calendar__month--current');
+      }
 
-    // Проверка и запуск рендеринга
+      // Title
+      const title = document.createElement('div');
+      title.style.fontWeight = 'bold';
+      title.style.fontSize = '1.2rem';
+      title.style.marginBottom = '0.5rem';
+      title.textContent = `${months[month]}`;
+      calendarContainer.appendChild(title);
+
+      // Больше не добавляем topBar с днями недели
+
+      // Calendar days (только текущий месяц)
+      const lastDay = new Date(year, month + 1, 0).getDate();
+      let dayNum = 1;
+      // Контейнер для недель (строк)
+      const monthInner = document.createElement('div');
+      monthInner.className = 'calendar__month-inner';
+      while (dayNum <= lastDay) {
+        const week = document.createElement('section');
+        week.className = 'calendar__week';
+        for (let i = 0; i < 7 && dayNum <= lastDay; i++) {
+          const day = document.createElement('div');
+          day.className = 'calendar__day';
+          // Прошедшие дни
+          const isPastMonth = year < today.getFullYear() || (year === today.getFullYear() && month < today.getMonth());
+          const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
+          if (
+            (isPastMonth) ||
+            (isCurrentMonth && dayNum < today.getDate())
+          ) {
+            day.classList.add('calendar__day--past');
+          }
+          // Подсветка сегодняшнего дня
+          if (year === today.getFullYear() && month === today.getMonth() && dayNum === today.getDate()) {
+            day.classList.add('calendar__day--today');
+          }
+
+          const dateSpan = document.createElement('span');
+          dateSpan.className = 'calendar__date';
+          dateSpan.textContent = dayNum;
+
+          const taskSpan = document.createElement('span');
+          taskSpan.className = 'calendar__task';
+
+          // Внутри дня теперь контейнер для числа и аватарки
+          const dateAvatarWrap = document.createElement('div');
+          dateAvatarWrap.className = 'calendar__date-avatar-wrap';
+          dateAvatarWrap.style.height = '28px';
+          dateAvatarWrap.style.width = '100%';
+
+          dateSpan.className = 'calendar__date';
+          dateAvatarWrap.appendChild(dateSpan);
+
+          // Check for birthdays
+          const currentDate = new Date(year, month, dayNum);
+          const birthdaysForDay = getBirthdaysForDate(currentDate);
+          if (birthdaysForDay.length > 0) {
+            day.classList.add('birthday');
+            // Аватарки поверх числа
+            const avatarsDiv = document.createElement('div');
+            avatarsDiv.className = 'calendar__avatars-on-date';
+            birthdaysForDay.forEach(bd => {
+              const avatar = document.createElement('img');
+              avatar.src = bd.avatar;
+              avatar.alt = bd.name;
+              avatar.title = bd.name;
+              // Красная обводка, если сегодня день рождения
+              if (year === today.getFullYear() && month === today.getMonth() && dayNum === today.getDate()) {
+                avatar.classList.add('calendar__avatar--today');
+              }
+              avatarsDiv.appendChild(avatar);
+            });
+            dateAvatarWrap.appendChild(avatarsDiv);
+            // Add click event for birthday details
+            day.addEventListener('click', () => {
+              showBirthdayPopup(birthdaysForDay, currentDate);
+            });
+          }
+          day.appendChild(dateAvatarWrap);
+          day.appendChild(taskSpan);
+          week.appendChild(day);
+          dayNum++;
+        }
+        // Если неделя не полная, добавляем пустые ячейки
+        for (let i = week.children.length; i < 7; i++) {
+          const emptyDay = document.createElement('div');
+          emptyDay.className = 'calendar__day';
+          emptyDay.style.visibility = 'hidden';
+          week.appendChild(emptyDay);
+        }
+        monthInner.appendChild(week);
+      }
+      calendarContainer.appendChild(monthInner);
+      return calendarContainer;
+    }
+
+    function renderAllCalendars(year) {
+      const allCalendarsDiv = document.getElementById('all-calendars');
+      allCalendarsDiv.innerHTML = '';
+      for (let m = 0; m < 12; m++) {
+        allCalendarsDiv.appendChild(renderSingleCalendar(year, m));
+      }
+    }
+
+    function showBirthdayPopup(birthdays, date) {
+      const popup = document.getElementById('birthday-popup');
+      const overlay = document.getElementById('overlay');
+      const content = document.getElementById('popup-content');
+
+      // const dateStr = date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' });
+      content.innerHTML = `
+        <h3>🎉 День рождения!</h3>
+        ${birthdays.map(birthday => {
+          const birthDate = new Date(birthday.date);
+          const now = new Date();
+          let age = now.getFullYear() - birthDate.getFullYear();
+          const upcoming = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+          if (now >= upcoming) age++;
+          
+          return `
+            <div style="display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: rgba(0, 143, 253, 0.1); border-radius: 8px;">
+              <img src="${birthday.avatar}" alt="${birthday.name}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+              <div>
+                <strong>${birthday.name}</strong><br>
+                Будет ${age} лет/года
+              </div>
+            </div>
+          `;
+        }).join('')}
+      `;
+
+      popup.classList.add('show');
+      overlay.classList.add('show');
+    }
+
+    function closePopup() {
+      document.getElementById('birthday-popup').classList.remove('show');
+      document.getElementById('overlay').classList.remove('show');
+    }
+
+    // Event listeners
+    document.getElementById('close-popup').addEventListener('click', closePopup);
+    document.getElementById('overlay').addEventListener('click', closePopup);
+
+    // Инициализация: показываем все 12 календарей текущего года
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM загружен, запуск рендеринга...');
-      renderBirthdays();
+      renderAllCalendars(new Date().getFullYear());
     });
   </script>
 </body>
-</html>
+</html> 
